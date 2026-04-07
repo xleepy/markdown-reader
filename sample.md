@@ -24,4 +24,13 @@ console.log(greet('world'));
 
 ### Nested heading level 3
 
+## Keybindings
+
+| Key | Action |
+|:----|-------:|
+| `j` / `↓` | Scroll down |
+| `k` / `↑` | Scroll up |
+| `g` / `G` | Top / Bottom |
+| `q` | Quit |
+
 Done!

@@ -8,6 +8,7 @@ import { renderCode } from './renderers/code.js';
 import { renderList } from './renderers/list.js';
 import { renderBlockquote } from './renderers/blockquote.js';
 import { renderHr } from './renderers/hr.js';
+import { renderTable } from './renderers/table.js';
 
 export function tokenToLines(
   token: Token,
@@ -22,6 +23,7 @@ export function tokenToLines(
     case 'list':       return renderList(token as Tokens.List, ti);
     case 'blockquote': return renderBlockquote(token as Tokens.Blockquote, ti);
     case 'hr':         return renderHr(ti, width);
+    case 'table':      return renderTable(token as Tokens.Table, ti);
     default:           return [];
   }
 }
