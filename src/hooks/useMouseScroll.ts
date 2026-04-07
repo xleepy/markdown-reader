@@ -1,12 +1,10 @@
 import { useEffect, useEffectEvent } from "react";
 
-const SCROLL_LINES = 3;
-
 // SGR mouse encoding: ESC [ < button ; col ; row M/m
 // button 64 = scroll up, 65 = scroll down
 const SGR_MOUSE_RE = /\x1b\[<(\d+);\d+;\d+[Mm]/g;
 
-export function useMouseScroll(onScroll: (delta: number) => void) {
+export function useMouseScroll(onScroll: (direction: -1 | 1) => void) {
   const handleScroll = useEffectEvent(onScroll);
 
   useEffect(() => {
@@ -23,8 +21,8 @@ export function useMouseScroll(onScroll: (delta: number) => void) {
       const str = data.toString("binary");
       for (const match of str.matchAll(SGR_MOUSE_RE)) {
         const button = parseInt(match[1]);
-        if (button === 64) handleScroll(-SCROLL_LINES); // wheel up
-        if (button === 65) handleScroll(+SCROLL_LINES); // wheel down
+        if (button === 64) handleScroll(-1); // wheel up
+        if (button === 65) handleScroll(+1); // wheel down
       }
     };
 

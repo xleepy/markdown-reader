@@ -1,8 +1,8 @@
 import { Box, useInput, useStdout } from 'ink';
 import type { Token } from 'marked';
-import { useState } from 'react';
 import React from 'react';
 import type { CodeHighlights } from '../highlight.js';
+import { useInertialScroll } from '../hooks/useInertialScroll.js';
 import { useMouseScroll } from '../hooks/useMouseScroll.js';
 import { useAllLines } from '../tokenToLines.js';
 import { StatusBar } from './StatusBar.js';
@@ -19,23 +19,22 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
   const height = stdout.rows || 24;
   const viewHeight = height - 1;
 
-  const [scrollY, setScrollY] = useState(0);
   const allLines = useAllLines(tokens, width, codeHighlights);
   const maxScroll = Math.max(0, allLines.length - viewHeight);
 
-  const clamp = (s: number, delta: number) => Math.max(0, Math.min(maxScroll, s + delta));
+  const { scrollY, addVelocity, jumpTo, scrollBy } = useInertialScroll(maxScroll);
 
-  useMouseScroll((delta) => setScrollY((s) => clamp(s, delta)));
+  useMouseScroll((direction) => addVelocity(direction));
 
   useInput((input, key) => {
-    if (key.downArrow || input === 'j') setScrollY((s) => Math.min(maxScroll, s + 1));
-    if (key.upArrow || input === 'k') setScrollY((s) => Math.max(0, s - 1));
-    if (input === 'd') setScrollY((s) => Math.min(maxScroll, s + Math.floor(viewHeight / 2)));
-    if (input === 'u') setScrollY((s) => Math.max(0, s - Math.floor(viewHeight / 2)));
-    if (key.pageDown) setScrollY((s) => Math.min(maxScroll, s + viewHeight));
-    if (key.pageUp) setScrollY((s) => Math.max(0, s - viewHeight));
-    if (input === 'g') setScrollY(0);
-    if (input === 'G') setScrollY(maxScroll);
+    if (key.downArrow || input === 'j') scrollBy(1);
+    if (key.upArrow   || input === 'k') scrollBy(-1);
+    if (input === 'd') scrollBy(Math.floor(viewHeight / 2));
+    if (input === 'u') scrollBy(-Math.floor(viewHeight / 2));
+    if (key.pageDown)  scrollBy(viewHeight);
+    if (key.pageUp)    scrollBy(-viewHeight);
+    if (input === 'g') jumpTo(0);
+    if (input === 'G') jumpTo(maxScroll);
     if (input === 'q') process.exit(0);
   });
 
