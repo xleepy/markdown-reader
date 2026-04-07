@@ -9,7 +9,26 @@ A terminal markdown reader built with [Ink](https://github.com/vadimdemedes/ink)
 - Scrollable viewport with vim-style keybindings
 - Non-TTY fallback — pipe-friendly static output
 
-## Usage
+## Installation
+
+### Global (recommended)
+
+```bash
+npm install -g .
+mdread <file.md>
+```
+
+### Development (symlinked)
+
+```bash
+npm link
+mdread <file.md>
+
+# To unlink later
+npm unlink -g markdown-reader
+```
+
+### Without installing
 
 ```bash
 npm start -- <file.md>
