@@ -18,6 +18,8 @@ npm install -g .
 mdread <file.md>
 ```
 
+`npm install -g .` runs the `prepare` script automatically, which compiles `src/` → `dist/index.js` via esbuild before linking. No separate build step needed.
+
 ### Development (symlinked)
 
 ```bash
@@ -49,6 +51,7 @@ npm start -- <file.md>
 ## Development
 
 ```bash
+npm run build       # Compile src/ → dist/ via esbuild
 npm run typecheck   # TypeScript type check
 npm run lint        # ESLint
 npm test            # Run tests (vitest)

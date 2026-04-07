@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 import { render } from 'ink';
 import { marked } from 'marked';
 import type { Tokens } from 'marked';
