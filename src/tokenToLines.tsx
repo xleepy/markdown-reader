@@ -23,7 +23,7 @@ export function tokenToLines(
     case 'list':       return renderList(token as Tokens.List, ti);
     case 'blockquote': return renderBlockquote(token as Tokens.Blockquote, ti);
     case 'hr':         return renderHr(ti, width);
-    case 'table':      return renderTable(token as Tokens.Table, ti);
+    case 'table':      return renderTable(token as Tokens.Table, ti, width);
     default:           return [];
   }
 }

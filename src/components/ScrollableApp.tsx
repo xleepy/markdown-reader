@@ -3,6 +3,7 @@ import type { Token } from 'marked';
 import { useState } from 'react';
 import React from 'react';
 import type { CodeHighlights } from '../highlight.js';
+import { useMouseScroll } from '../hooks/useMouseScroll.js';
 import { useAllLines } from '../tokenToLines.js';
 import { StatusBar } from './StatusBar.js';
 
@@ -21,6 +22,10 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
   const [scrollY, setScrollY] = useState(0);
   const allLines = useAllLines(tokens, width, codeHighlights);
   const maxScroll = Math.max(0, allLines.length - viewHeight);
+
+  const clamp = (s: number, delta: number) => Math.max(0, Math.min(maxScroll, s + delta));
+
+  useMouseScroll((delta) => setScrollY((s) => clamp(s, delta)));
 
   useInput((input, key) => {
     if (key.downArrow || input === 'j') setScrollY((s) => Math.min(maxScroll, s + 1));

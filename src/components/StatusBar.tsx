@@ -14,7 +14,7 @@ export function StatusBar({ filePath, scrollPercent }: StatusBarProps) {
         {filePath}{' '}
       </Text>
       <Text color="gray" dimColor>
-        {scrollPercent}%{'  '}j/k ↑↓ · d/u half-page · g/G top/bot · q quit{' '}
+        {scrollPercent}%{'  '}scroll/j/k ↑↓ · d/u half-page · g/G top/bot · q quit{' '}
       </Text>
     </Box>
   );
