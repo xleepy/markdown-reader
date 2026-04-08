@@ -4,6 +4,22 @@ import React from 'react';
 import type { ThemedToken } from 'shiki';
 import type { CodeHighlights } from '../highlight.js';
 
+function truncateTokens(tokens: ThemedToken[], maxWidth: number): ThemedToken[] {
+  const result: ThemedToken[] = [];
+  let remaining = maxWidth;
+  for (const t of tokens) {
+    if (remaining <= 0) break;
+    if (t.content.length <= remaining) {
+      result.push(t);
+      remaining -= t.content.length;
+    } else {
+      result.push({ ...t, content: t.content.slice(0, remaining) });
+      remaining = 0;
+    }
+  }
+  return result;
+}
+
 export function renderCode(
   token: Tokens.Code,
   ti: number,
@@ -22,7 +38,7 @@ export function renderCode(
     ...highlighted.map((lineTokens: ThemedToken[], li: number) => (
       <Text key={`${ti}-cl-${li}`}>
         {'  │ '}
-        {lineTokens.map((t: ThemedToken, j: number) => (
+        {truncateTokens(lineTokens, innerWidth - 2).map((t: ThemedToken, j: number) => (
           <Text key={j} color={t.color ?? undefined}>
             {t.content}
           </Text>

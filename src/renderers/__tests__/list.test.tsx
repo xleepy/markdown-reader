@@ -27,18 +27,18 @@ function makeList(items: string[], ordered = false): Tokens.List {
 
 describe('renderList', () => {
   it('returns one element per item plus a spacer', () => {
-    const els = renderList(makeList(['a', 'b', 'c']), 0);
+    const els = renderList(makeList(['a', 'b', 'c']), 0, 80);
     expect(els).toHaveLength(4); // 3 items + spacer
   });
 
   it('uses bullet • for unordered lists', () => {
-    const [first] = renderList(makeList(['item']), 0);
+    const [first] = renderList(makeList(['item']), 0, 80);
     const text = JSON.stringify(props(first).children);
     expect(text).toContain('•');
   });
 
   it('uses numbers for ordered lists', () => {
-    const [first] = renderList(makeList(['item'], true), 0);
+    const [first] = renderList(makeList(['item'], true), 0, 80);
     const text = JSON.stringify(props(first).children);
     expect(text).toContain('1.');
   });

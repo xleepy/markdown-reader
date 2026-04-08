@@ -18,10 +18,10 @@ export function tokenToLines(
 ): React.ReactElement[] {
   switch (token.type) {
     case 'heading': return renderHeading(token as Tokens.Heading, ti, width);
-    case 'paragraph': return renderParagraph(token as Tokens.Paragraph, ti);
+    case 'paragraph': return renderParagraph(token as Tokens.Paragraph, ti, width);
     case 'code': return renderCode(token as Tokens.Code, ti, width, codeHighlights);
-    case 'list': return renderList(token as Tokens.List, ti);
-    case 'blockquote': return renderBlockquote(token as Tokens.Blockquote, ti);
+    case 'list': return renderList(token as Tokens.List, ti, width);
+    case 'blockquote': return renderBlockquote(token as Tokens.Blockquote, ti, width);
     case 'hr': return renderHr(ti, width);
     case 'table': return renderTable(token as Tokens.Table, ti, width);
     default: return [];

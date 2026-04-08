@@ -1,25 +1,7 @@
 import { Text } from 'ink';
 import type { Tokens } from 'marked';
 import React from 'react';
-
-function wordWrap(text: string, lineWidth: number): string[] {
-  if (lineWidth <= 0) return [text];
-  const words = text.split(' ');
-  const lines: string[] = [];
-  let current = '';
-  for (const word of words) {
-    if (!current) {
-      current = word;
-    } else if (current.length + 1 + word.length <= lineWidth) {
-      current += ' ' + word;
-    } else {
-      lines.push(current);
-      current = word;
-    }
-  }
-  if (current) lines.push(current);
-  return lines;
-}
+import { wordWrap } from '../wordWrap.js';
 
 export function renderHeading(token: Tokens.Heading, ti: number, width: number): React.ReactElement[] {
   const color = token.depth === 1 ? 'cyan' : token.depth === 2 ? 'green' : 'yellow';
