@@ -1,7 +1,6 @@
-export function wordWrap(text: string, lineWidth: number): string[] {
-  if (lineWidth <= 0) return [text];
+export function* wordWrap(text: string, lineWidth: number): Generator<string> {
+  if (lineWidth <= 0) { yield text; return; }
   const words = text.split(' ');
-  const lines: string[] = [];
   let current = '';
   for (const word of words) {
     if (!current) {
@@ -9,10 +8,9 @@ export function wordWrap(text: string, lineWidth: number): string[] {
     } else if (current.length + 1 + word.length <= lineWidth) {
       current += ' ' + word;
     } else {
-      lines.push(current);
+      yield current;
       current = word;
     }
   }
-  if (current) lines.push(current);
-  return lines.length ? lines : [''];
+  yield current || '';
 }

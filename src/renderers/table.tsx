@@ -1,6 +1,7 @@
 import { Text } from 'ink';
 import type { Tokens } from 'marked';
 import React from 'react';
+import { wordWrap } from '../wordWrap.js';
 
 type Align = 'left' | 'right' | 'center' | null;
 
@@ -13,20 +14,18 @@ function clampColWidths(colWidths: number[], availableWidth: number): number[] {
 
   if (total <= budget) return colWidths;
 
-  // Distribute budget proportionally, minimum 3 chars per column
-  return colWidths.map(w => Math.max(3, Math.floor((w / total) * budget)));
+  // Give each column a guaranteed minimum, then distribute the rest proportionally.
+  // Using Math.max(3, proportional) alone can push the total over budget when small
+  // columns get bumped up to the minimum.
+  const MIN = 3;
+  const remaining = budget - MIN * colWidths.length;
+  if (remaining <= 0) return colWidths.map(() => MIN);
+
+  return colWidths.map(w => MIN + Math.floor((w / total) * remaining));
 }
 
 function wrapCell(text: string, width: number): string[] {
-  if (text.length <= width) return [text];
-  const lines: string[] = [];
-  let remaining = text;
-  while (remaining.length > width) {
-    lines.push(remaining.slice(0, width));
-    remaining = remaining.slice(width);
-  }
-  if (remaining.length > 0) lines.push(remaining);
-  return lines;
+  return [...wordWrap(text, width)];
 }
 
 function padLine(line: string, width: number, align: Align): string {

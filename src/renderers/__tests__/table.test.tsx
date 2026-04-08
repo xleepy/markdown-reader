@@ -28,7 +28,7 @@ function makeTable(
 describe('renderTable', () => {
   it('returns top + header + mid + N rows + bottom + spacer', () => {
     const els = renderTable(makeTable(['A', 'B'], [['1', '2'], ['3', '4']]), 0, WIDTH);
-    expect(els).toHaveLength(7); // top + header + mid + 2 rows + bottom + spacer
+    expect(els).toHaveLength(8); // top + header + mid + row1 + sep + row2 + bottom + spacer
   });
 
   it('pads columns to the widest cell', () => {
@@ -56,9 +56,11 @@ describe('renderTable', () => {
     expect(topBorder.length).toBeLessThanOrEqual(40);
   });
 
-  it('truncates cell text with … when column is clamped', () => {
+  it('wraps cell text across rows when column is clamped', () => {
     const els = renderTable(makeTable(['Col'], [['a very long value that will not fit']]), 0, 20);
-    const rowText = props(els[3]).children as string;
-    expect(rowText).toContain('…');
+    // text wraps: multiple row lines before bottom border + spacer
+    const bottomBorder = props(els[els.length - 2]).children as string;
+    expect(bottomBorder).toContain('└');
+    expect(els.length).toBeGreaterThan(5); // top + header + mid + multiple row lines + bottom + spacer
   });
 });

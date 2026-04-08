@@ -1,10 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
-const BOOST = 2; // velocity added per scroll event
-const MAX_VELOCITY = 20; // lines/frame cap
-const FRICTION = 0.82; // velocity multiplier per frame
+const BOOST = 1; // velocity added per scroll event
+const MAX_VELOCITY = 8; // lines/frame cap
+const FRICTION = 0.78; // velocity multiplier per frame
 const MIN_VELOCITY = 0.1; // stop threshold
-const FRAME_MS = 16; // ~60fps
+const FRAME_MS = 32; // ~30fps — sufficient for terminal rendering
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
