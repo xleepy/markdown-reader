@@ -28,11 +28,11 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
 
   useInput((input, key) => {
     if (key.downArrow || input === 'j') scrollBy(1);
-    if (key.upArrow   || input === 'k') scrollBy(-1);
+    if (key.upArrow || input === 'k') scrollBy(-1);
     if (input === 'd') scrollBy(Math.floor(viewHeight / 2));
     if (input === 'u') scrollBy(-Math.floor(viewHeight / 2));
-    if (key.pageDown)  scrollBy(viewHeight);
-    if (key.pageUp)    scrollBy(-viewHeight);
+    if (key.pageDown) scrollBy(viewHeight);
+    if (key.pageUp) scrollBy(-viewHeight);
     if (input === 'g') jumpTo(0);
     if (input === 'G') jumpTo(maxScroll);
     if (input === 'q') process.exit(0);
@@ -42,8 +42,8 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
   const scrollPercent = maxScroll === 0 ? 100 : Math.round((scrollY / maxScroll) * 100);
 
   return (
-    <Box flexDirection="column">
-      <Box flexDirection="column" paddingX={1}>
+    <Box flexDirection="column" height={height}>
+      <Box flexDirection="column" paddingX={1} flexGrow={1} overflow="hidden">
         {visibleLines.map(({ key, el }) => (
           <Box key={key}>{el}</Box>
         ))}

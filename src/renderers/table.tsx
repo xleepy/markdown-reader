@@ -17,29 +17,42 @@ function clampColWidths(colWidths: number[], availableWidth: number): number[] {
   return colWidths.map(w => Math.max(3, Math.floor((w / total) * budget)));
 }
 
-function truncate(text: string, width: number): string {
-  return text.length <= width ? text : text.slice(0, width - 1) + '…';
+function wrapCell(text: string, width: number): string[] {
+  if (text.length <= width) return [text];
+  const lines: string[] = [];
+  let remaining = text;
+  while (remaining.length > width) {
+    lines.push(remaining.slice(0, width));
+    remaining = remaining.slice(width);
+  }
+  if (remaining.length > 0) lines.push(remaining);
+  return lines;
 }
 
-function padCell(text: string, width: number, align: Align): string {
-  const clipped = truncate(text, width);
-  const pad = width - clipped.length;
-  if (align === 'right') return clipped.padStart(width);
+function padLine(line: string, width: number, align: Align): string {
+  const pad = width - line.length;
+  if (align === 'right') return line.padStart(width);
   if (align === 'center') {
     const left = Math.floor(pad / 2);
-    return ' '.repeat(left) + clipped + ' '.repeat(pad - left);
+    return ' '.repeat(left) + line + ' '.repeat(pad - left);
   }
-  return clipped.padEnd(width);
+  return line.padEnd(width);
 }
 
-function row(cells: Tokens.TableCell[], colWidths: number[], aligns: Align[]): string {
-  return '│ ' + cells.map((c, i) => padCell(c.text, colWidths[i], aligns[i])).join(' │ ') + ' │';
+function rowLines(cells: Tokens.TableCell[], colWidths: number[], aligns: Align[]): string[] {
+  const wrapped = cells.map((c, i) => wrapCell(c.text, colWidths[i]));
+  const numLines = Math.max(...wrapped.map(l => l.length));
+  const result: string[] = [];
+  for (let li = 0; li < numLines; li++) {
+    result.push('│ ' + wrapped.map((lines, i) => padLine(lines[li] ?? '', colWidths[i], aligns[i])).join(' │ ') + ' │');
+  }
+  return result;
 }
 
 function border(type: 'top' | 'mid' | 'bottom', colWidths: number[]): string {
   const [l, m, r] = type === 'top' ? ['┌', '┬', '┐']
-                  : type === 'mid' ? ['├', '┼', '┤']
-                  :                  ['└', '┴', '┘'];
+    : type === 'mid' ? ['├', '┼', '┤']
+      : ['└', '┴', '┘'];
   return l + '─' + colWidths.map(w => '─'.repeat(w)).join('─' + m + '─') + '─' + r;
 }
 
@@ -49,13 +62,22 @@ export function renderTable(token: Tokens.Table, ti: number, width: number): Rea
   );
   const colWidths = clampColWidths(naturalWidths, width - 2); // -2 for paddingX
 
+  const headerLines = rowLines(token.header, colWidths, token.align);
+
   return [
     <Text key={`${ti}-tt`} color="gray">{border('top', colWidths)}</Text>,
-    <Text key={`${ti}-th`} bold>{row(token.header, colWidths, token.align)}</Text>,
-    <Text key={`${ti}-tm`} color="gray">{border('mid', colWidths)}</Text>,
-    ...token.rows.map((cells, ri) => (
-      <Text key={`${ti}-tr-${ri}`}>{row(cells, colWidths, token.align)}</Text>
+    ...headerLines.map((line, li) => (
+      <Text key={`${ti}-th-${li}`} bold>{line}</Text>
     )),
+    <Text key={`${ti}-tm`} color="gray">{border('mid', colWidths)}</Text>,
+    ...token.rows.flatMap((cells, ri) => [
+      ...rowLines(cells, colWidths, token.align).map((line, li) => (
+        <Text key={`${ti}-tr-${ri}-${li}`}>{line}</Text>
+      )),
+      ...(ri < token.rows.length - 1
+        ? [<Text key={`${ti}-tr-${ri}-sep`} color="gray">{border('mid', colWidths)}</Text>]
+        : []),
+    ]),
     <Text key={`${ti}-tb`} color="gray">{border('bottom', colWidths)}</Text>,
     <Text key={`${ti}-sp`}> </Text>,
   ];
