@@ -11,7 +11,7 @@ import { App } from './components/App.js';
 const inputPath = process.argv[2];
 
 if (!inputPath) {
-  console.error('Usage: npm start -- <file.md | directory>');
+  console.error('Usage: mdread <file.md | directory>');
   process.exit(1);
 }
 

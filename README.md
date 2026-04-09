@@ -4,10 +4,11 @@ A terminal markdown reader built with [Ink](https://github.com/vadimdemedes/ink)
 
 ## Features
 
+- **File explorer** — pass a directory to browse and open markdown files interactively
 - Headings colored by depth (cyan / green / yellow)
 - Syntax-highlighted code blocks via [Shiki](https://shiki.style/) (Nord theme, 100+ languages)
 - Tables with column alignment and automatic width clamping on narrow terminals
-- Mouse wheel scrolling + vim-style keyboard navigation
+- Inertial mouse wheel scrolling + vim-style keyboard navigation
 - Status bar with filename and scroll percentage
 - Non-TTY fallback — pipe or redirect output without errors
 
@@ -36,18 +37,31 @@ npm unlink -g markdown-reader
 
 ```bash
 npm start -- <file.md>
+npm start -- <directory>   # opens file explorer
 ```
 
 ## Navigation
 
-### Mouse
+### File explorer
+
+| Key | Action |
+|-----|--------|
+| `j` / `↓` | Move down |
+| `k` / `↑` | Move up |
+| `Enter` | Open file / enter directory |
+| `-` | Go up to parent directory |
+| `q` | Quit |
+
+### Viewer
+
+#### Mouse
 
 | Action | Effect |
 |--------|--------|
 | Scroll wheel up | 3 lines up |
 | Scroll wheel down | 3 lines down |
 
-### Keyboard
+#### Keyboard
 
 | Key | Action |
 |-----|--------|
@@ -57,7 +71,7 @@ npm start -- <file.md>
 | `PgDn` / `PgUp` | Full page down / up |
 | `g` | Jump to top |
 | `G` | Jump to bottom |
-| `q` | Quit |
+| `q` / `Esc` | Back to explorer / quit |
 
 ## Development
 
@@ -73,24 +87,12 @@ npm run test:watch  # Watch mode
 
 ```
 src/
-  index.tsx                  # Entry point — parse args, init highlighter, render
-  highlight.ts               # Async shiki syntax highlighting
-  tokenToLines.tsx           # Token dispatcher + useAllLines hook
-  hooks/
-    useMouseScroll.ts        # SGR mouse wheel → scroll delta
-  renderers/
-    heading.tsx
-    paragraph.tsx
-    code.tsx
-    list.tsx
-    blockquote.tsx
-    hr.tsx
-    table.tsx                # Width-aware table with alignment + truncation
-    __tests__/               # Vitest unit tests
-  components/
-    ScrollableApp.tsx        # TTY mode — keyboard + mouse scroll
-    StaticApp.tsx            # Non-TTY mode — static dump
-    StatusBar.tsx
+  index.tsx          # Entry point
+  highlight.ts       # Shiki syntax highlighting
+  tokenToLines.tsx   # Markdown token → renderable lines
+  hooks/             # Custom React hooks (scroll, mouse)
+  renderers/         # Per-token-type render components + tests
+  components/        # App-level components (explorer, viewer, status bar)
 ```
 
 ## Stack
