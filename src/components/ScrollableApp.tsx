@@ -11,9 +11,10 @@ interface ScrollableAppProps {
   tokens: Token[];
   codeHighlights: CodeHighlights;
   filePath: string;
+  onBack?: () => void;
 }
 
-export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAppProps) {
+export function ScrollableApp({ tokens, codeHighlights, filePath, onBack }: ScrollableAppProps) {
   const { stdout } = useStdout();
   const width = stdout.columns || 80;
   const height = stdout.rows || 24;
@@ -35,7 +36,11 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
     if (key.pageUp) scrollBy(-viewHeight);
     if (input === 'g') jumpTo(0);
     if (input === 'G') jumpTo(maxScroll);
-    if (input === 'q') process.exit(0);
+    if (input === 'q') {
+      if (onBack) onBack();
+      else process.exit(0);
+    }
+    if (key.escape && onBack) onBack();
   });
 
   const visibleLines = allLines.slice(scrollY, scrollY + viewHeight);
