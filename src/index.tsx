@@ -1,30 +1,42 @@
 import { render } from 'ink';
 import { marked } from 'marked';
 import type { Tokens } from 'marked';
-import { readFileSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 import React from 'react';
 import { buildHighlights } from './highlight.js';
 import { ScrollableApp } from './components/ScrollableApp.js';
 import { StaticApp } from './components/StaticApp.js';
+import { App } from './components/App.js';
 
-const filePath = process.argv[2];
+const inputPath = process.argv[2];
 
-if (!filePath) {
-  console.error('Usage: npm start -- <file.md>');
+if (!inputPath) {
+  console.error('Usage: mdread <file.md | directory>');
   process.exit(1);
 }
 
-const raw = readFileSync(filePath, 'utf8');
-const tokens = marked.lexer(raw);
 const isTTY = Boolean(process.stdin.isTTY);
 
 async function init() {
-  const codTokens = tokens.filter((t): t is Tokens.Code => t.type === 'code');
-  const codeHighlights = await buildHighlights(codTokens);
+  const stat = statSync(inputPath);
+
+  if (stat.isDirectory()) {
+    if (!isTTY) {
+      console.error('Directory browsing requires an interactive terminal.');
+      process.exit(1);
+    }
+    render(<App dirPath={inputPath} />);
+    return;
+  }
+
+  const raw = readFileSync(inputPath, 'utf8');
+  const tokens = marked.lexer(raw);
+  const codeTokens = tokens.filter((t): t is Tokens.Code => t.type === 'code');
+  const codeHighlights = await buildHighlights(codeTokens);
 
   render(
     isTTY ? (
-      <ScrollableApp tokens={tokens} codeHighlights={codeHighlights} filePath={filePath!} />
+      <ScrollableApp tokens={tokens} codeHighlights={codeHighlights} filePath={inputPath} />
     ) : (
       <StaticApp tokens={tokens} codeHighlights={codeHighlights} />
     )
