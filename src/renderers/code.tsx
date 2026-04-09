@@ -35,16 +35,20 @@ export function renderCode(
     <Text key={`${ti}-ct`} color="gray">
       {'  ╭' + '─'.repeat(innerWidth) + '╮'}
     </Text>,
-    ...highlighted.map((lineTokens: ThemedToken[], li: number) => (
-      <Text key={`${ti}-cl-${li}`}>
-        {'  │ '}
-        {truncateTokens(lineTokens, innerWidth - 2).map((t: ThemedToken, j: number) => (
-          <Text key={j} color={t.color ?? undefined}>
-            {t.content}
-          </Text>
-        ))}
-      </Text>
-    )),
+    ...highlighted.map((lineTokens: ThemedToken[], li: number) => {
+      const truncated = truncateTokens(lineTokens, innerWidth - 2);
+      const contentLen = truncated.reduce((sum, t) => sum + t.content.length, 0);
+      const rightPad = ' '.repeat(Math.max(0, innerWidth - 2 - contentLen));
+      return (
+        <Text key={`${ti}-cl-${li}`}>
+          {'  │ '}
+          {truncated.map((t: ThemedToken, j: number) => (
+            <Text key={j} color={t.color ?? undefined}>{t.content}</Text>
+          ))}
+          {rightPad}{' │'}
+        </Text>
+      );
+    }),
     <Text key={`${ti}-cb`} color="gray">
       {'  ╰' + '─'.repeat(innerWidth) + '╯'}
     </Text>,

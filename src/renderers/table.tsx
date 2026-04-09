@@ -1,6 +1,7 @@
 import { Text } from 'ink';
 import type { Tokens } from 'marked';
 import React from 'react';
+import { extractPlainText } from '../inlineText.js';
 import { wordWrap } from '../wordWrap.js';
 
 type Align = 'left' | 'right' | 'center' | null;
@@ -39,7 +40,7 @@ function padLine(line: string, width: number, align: Align): string {
 }
 
 function rowLines(cells: Tokens.TableCell[], colWidths: number[], aligns: Align[]): string[] {
-  const wrapped = cells.map((c, i) => wrapCell(c.text, colWidths[i]));
+  const wrapped = cells.map((c, i) => wrapCell(extractPlainText(c.tokens ?? []) || c.text, colWidths[i]));
   const numLines = Math.max(...wrapped.map(l => l.length));
   const result: string[] = [];
   for (let li = 0; li < numLines; li++) {
@@ -56,8 +57,9 @@ function border(type: 'top' | 'mid' | 'bottom', colWidths: number[]): string {
 }
 
 export function renderTable(token: Tokens.Table, ti: number, width: number): React.ReactElement[] {
+  const cellText = (c: Tokens.TableCell) => extractPlainText(c.tokens ?? []) || c.text;
   const naturalWidths = token.header.map((cell, ci) =>
-    Math.max(cell.text.length, ...token.rows.map(r => r[ci]?.text.length ?? 0))
+    Math.max(cellText(cell).length, ...token.rows.map(r => r[ci] ? cellText(r[ci]).length : 0))
   );
   const colWidths = clampColWidths(naturalWidths, width - 2); // -2 for paddingX
 

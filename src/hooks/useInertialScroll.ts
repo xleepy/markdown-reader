@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 const BOOST = 1; // velocity added per scroll event
-const MAX_VELOCITY = 8; // lines/frame cap
+const MAX_VELOCITY = 4; // lines/frame cap
 const FRICTION = 0.78; // velocity multiplier per frame
 const MIN_VELOCITY = 0.1; // stop threshold
 const FRAME_MS = 32; // ~30fps — sufficient for terminal rendering
@@ -20,6 +20,10 @@ export function useInertialScroll(maxScroll: number) {
 
   useEffect(() => {
     maxRef.current = maxScroll;
+    if (posRef.current > maxScroll) {
+      posRef.current = maxScroll;
+      setScrollY(maxScroll);
+    }
   }, [maxScroll]);
 
   const stopAnimation = useCallback(() => {

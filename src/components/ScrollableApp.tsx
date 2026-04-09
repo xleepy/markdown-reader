@@ -48,7 +48,7 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
           <Box key={key}>{el}</Box>
         ))}
       </Box>
-      <StatusBar filePath={filePath} scrollPercent={scrollPercent} />
+      <StatusBar filePath={filePath} scrollPercent={scrollPercent} width={width} />
     </Box>
   );
 }
