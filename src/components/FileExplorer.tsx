@@ -71,7 +71,7 @@ export function FileExplorer({ dirPath, onSelectFile }: FileExplorerProps) {
     }
     if (key.backspace || input === '-') {
       const parent = dirname(currentDir);
-      if (parent !== currentDir && currentDir.startsWith(rootPath)) {
+      if (parent !== currentDir && currentDir.startsWith(rootPath + '/')) {
         setCurrentDir(parent);
         setCursor(0);
       }
@@ -100,7 +100,7 @@ export function FileExplorer({ dirPath, onSelectFile }: FileExplorerProps) {
           visibleEntries.map((entry, i) => {
             const index = scrollOffset + i;
             const isSelected = index === cursor;
-            const prefix = entry.isDirectory ? '  ' : '  ';
+            const prefix = entry.isDirectory ? '▸ ' : '  ';
             const label = entry.isDirectory ? `${entry.name}/` : entry.name;
             return (
               <Text
