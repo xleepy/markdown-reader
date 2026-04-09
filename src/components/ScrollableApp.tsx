@@ -38,8 +38,9 @@ export function ScrollableApp({ tokens, codeHighlights, filePath }: ScrollableAp
     if (input === 'q') process.exit(0);
   });
 
-  const visibleLines = allLines.slice(scrollY, scrollY + viewHeight);
-  const scrollPercent = maxScroll === 0 ? 100 : Math.round((scrollY / maxScroll) * 100);
+  const safeScrollY = Math.min(scrollY, maxScroll);
+  const visibleLines = allLines.slice(safeScrollY, safeScrollY + viewHeight);
+  const scrollPercent = maxScroll === 0 ? 100 : Math.round((safeScrollY / maxScroll) * 100);
 
   return (
     <Box flexDirection="column" height={height}>
